@@ -1,7 +1,6 @@
 services:
   - type: web
-    name: signal-bot
     env: python
+    pythonVersion: 3.10
     buildCommand: pip install -r requirements.txt
-    startCommand: python main.py
-    instanceType: free
+    startCommand: python3 main.py
