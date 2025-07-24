@@ -7,23 +7,19 @@ from ta.trend import EMAIndicator, MACD
 from ta.momentum import RSIIndicator, StochasticOscillator
 from ta.trend import ADXIndicator
 
-# تنظیمات ربات تلگرام
 BOT_TOKEN = "7950619090:AAGafe0s5xwEDxXIytd-OFybum3tUCuOZPI"
 CHAT_ID = "423311697"
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 app = Flask(__name__)
 
-# لیست ارزهای منتخب
 COINS = ["bitcoin", "ethereum", "bnb", "solana", "ripple"]
 
-# توابع ارسال پیام
 def telegram_send_message(text):
     url = f"{TELEGRAM_API_URL}/sendMessage"
     data = {"chat_id": CHAT_ID, "text": text}
     requests.post(url, data=data)
 
-# تابع دریافت قیمت‌ها از CoinCap
 def fetch_ohlcv(coin):
     url = f"https://api.coincap.io/v2/assets/{coin}/history?interval=h1"
     response = requests.get(url)
@@ -35,7 +31,6 @@ def fetch_ohlcv(coin):
         return df
     return None
 
-# تحلیل تکنیکال و بررسی سیگنال‌ها
 def analyze(df):
     df["ema_fast"] = EMAIndicator(df["price"], window=10).ema_indicator()
     df["ema_slow"] = EMAIndicator(df["price"], window=21).ema_indicator()
@@ -67,7 +62,10 @@ def analyze(df):
     else:
         return "NEUTRAL ⚖️"
 
-# هندلر Webhook
+@app.route("/")
+def home():
+    return "Bot is running!"
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json()
@@ -96,7 +94,6 @@ def webhook():
 
     return "OK"
 
-# اجرای اپ Flask
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
